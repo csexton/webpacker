@@ -9,17 +9,31 @@
    config. For example, install the Chrome extension [NiM](https://chrome.google.com/webstore/detail/nodejs-v8-inspector-manag/gnhhdgbaldcilmgcpfddgdbkhjohddkj) and 
    set the option for the dev tools to open automatically. For more details on debugging,
    see the official [Webpack docs on debugging](https://webpack.js.org/contribute/debugging/#devtools)
-
 ## ENOENT: no such file or directory - node-sass
 
-*  If you get this error `ENOENT: no such file or directory - node-sass` on Heroku
-or elsewhere during `assets:precompile` or `bundle exec rails webpacker:compile`
-then you would need to rebuild node-sass. It's a bit of a weird error;
-basically, it can't find the `node-sass` binary.
-An easy solution is to create a postinstall hook - `npm rebuild node-sass` in
-`package.json` and that will ensure `node-sass` is rebuilt whenever
-you install any new modules.
+If you get the error `ENOENT: no such file or directory - node-sass` during
+`assets:precompile` or `bundle exec rails webpacker:compile` then you may
+need to rebuild `node-sass`. It's a bit of a weird error; basically, it can't
+find the `node-sass` binary.  An easy solution is to create a postinstall hook
+to ensure `node-sass` is rebuilt whenever new modules are installed.
 
+In `package.json`:
+
+```json
+"scripts": {
+  "postinstall": "npm rebuild node-sass"
+}
+```
+
+Note: Heroku's Ruby buildpack doesn't include the `npm` binary, so for the
+postinstall to work you will need to [add the Node.js
+buildpack](https://devcenter.heroku.com/articles/using-multiple-buildpacks-for-an-app#adding-a-buildpack)
+_before_ the Ruby one:
+
+
+```
+heroku buildpacks:add --index 1 heroku/nodejs
+```
 
 ## Can't find hello_react.js in manifest.json
 
